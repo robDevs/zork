@@ -5,6 +5,9 @@
 /* WRITTEN BY R. M. SUPNIK */
 
 #include <stdio.h>
+#ifdef VITA
+#include "controls.h"
+#endif
 #include "funcs.h"
 #include "vars.h"
 
@@ -63,6 +66,9 @@ integer y;
 integer z;
 logical nl;
 {
+    #ifdef VITA
+    init_keys();
+    #endif
     const char *zkey = "IanLanceTaylorJr";
     long x;
 
@@ -89,6 +95,12 @@ logical nl;
 	more_output(NULL);
 
     while (1) {
+    #ifdef VITA
+    update_keys();
+    if(start_released || select_released || cross_released || square_released || triangle_released || circle_released) {
+        break;
+    }
+    #endif
 	integer i;
 
 	i = getc(dbfile);
@@ -101,7 +113,7 @@ logical nl;
 	if (i == '\0')
 	    break;
 	else if (i == '\n') {
-	    putchar('\n');
+	    printf("\n");
 	    if (nl)
 		more_output(NULL);
 	}
@@ -118,11 +130,11 @@ logical nl;
 	    z = 0;
 	}
 	else
-	    putchar(i);
+	    printf("%c",(char)i);
     }
 
     if (nl)
-	putchar('\n');
+	printf("\n");
 }
 
 /* OBJACT-- APPLY OBJECTS FROM PARSE VECTOR */
@@ -427,7 +439,7 @@ L1000:
 L1100:
     score_(0);
 /* 						!TELL SCORE. */
-    (void) fclose(dbfile);
+    (void) fclose(dbfile);\
     exit_();
 
 } /* jigsup_ */
