@@ -5,6 +5,9 @@
 /* WRITTEN BY R. M. SUPNIK */
 
 #include <stdio.h>
+#ifdef VITA
+#include "button-keyboard.h"
+#endif
 #include "funcs.h"
 #include "vars.h"
 
@@ -32,7 +35,7 @@ L100:
     i = exits_1.travel[xi - 1];
 /* 						!GET ENTRY. */
     curxt_1.xroom1 = i & xpars_1.xrmask;
-/* mask to 16-bits to get rid of sign extension problems with 32-bit ints 
+/* mask to 16-bits to get rid of sign extension problems with 32-bit ints
 */
     xxxflg = ~ xpars_1.xlflag & 65535;
     curxt_1.xtype = ((i & xxxflg) / xpars_1.xfshft & xpars_1.xfmask) + 1;
@@ -95,7 +98,7 @@ logical nocare;
     i__1 = objcts_1.olnt;
     for (i = 1; i <= i__1; ++i) {
 /* 						!LOOP */
-	if ((rm == 0 || objcts_1.oroom[i - 1] != rm) && (adv == 0 || 
+	if ((rm == 0 || objcts_1.oroom[i - 1] != rm) && (adv == 0 ||
 		objcts_1.oadv[i - 1] != adv) && (con == 0 || objcts_1.ocan[
 		i - 1] != con)) {
 	    goto L1000;
@@ -107,7 +110,7 @@ logical nocare;
 	    goto L1000;
 	}
 	if (~ (nocare) & (objcts_1.oflag1[i - 1] & TAKEBT) == 0 || (
-		objcts_1.oflag1[i - 1] & f1) == 0 && (objcts_1.oflag2[i - 1] 
+		objcts_1.oflag1[i - 1] & f1) == 0 && (objcts_1.oflag2[i - 1]
 		& f2) == 0) {
 	    goto L500;
 	}
@@ -132,7 +135,7 @@ L500:
 	i__2 = objcts_1.olnt;
 	for (j = 1; j <= i__2; ++j) {
 /* 						!NO, SEARCH CONTENTS. */
-	    if (objcts_1.ocan[j - 1] != i || (objcts_1.oflag1[j - 1] & 
+	    if (objcts_1.ocan[j - 1] != i || (objcts_1.oflag1[j - 1] &
 		    VISIBT) == 0 || (objcts_1.oflag1[j - 1] & f1) ==
 		     0 && (objcts_1.oflag2[j - 1] & f2) == 0) {
 		goto L700;
@@ -175,7 +178,11 @@ L100:
     rspeak_(q);
 /* 						!ASK */
     (void) fflush(stdout);
+    #ifdef VITA
+        strcpy(ans, keyboard_get(78, 960-300, 544-(17*3+54)+57));
+    #else
     (void) fgets(ans, sizeof ans, stdin);
+    #endif
     more_input();
 /* 						!GET ANSWER */
     if (*ans == 'Y' || *ans == 'y') {
