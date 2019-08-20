@@ -44,6 +44,10 @@ typedef int logical;
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
+#ifdef VITA
+#define printf psvDebugScreenPrintf
+#endif
+
 extern logical
 	protected P((void)),
 	wizard P((void));
@@ -65,7 +69,7 @@ extern void
 	gdt_ P((void)),
 	gttime_ P((integer *)),
 	invent_ P((integer)),
-	itime_ P((integer *, integer *, integer *)), 
+	itime_ P((integer *, integer *, integer *)),
 	jigsup_ P((integer)),
 	newsta_ P((integer, integer, integer, integer, integer)),
 	orphan_ P((integer, integer, integer, integer, integer)),
@@ -91,7 +95,7 @@ extern integer
 	mrhere_ P((integer)),
 	oactor_ P((integer)),
 	rnd_ P((integer)),
-	robadv_ P((integer, integer, integer, integer)), 
+	robadv_ P((integer, integer, integer, integer)),
 	robrm_ P((integer, integer, integer, integer, integer)),
 	sparse_ P((const integer *, integer, logical)),
 	vilstr_ P((integer)),
