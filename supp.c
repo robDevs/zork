@@ -11,7 +11,10 @@
 #else /* ! BSD4_2 */
 #include <time.h>
 #endif /* ! BSD4_2 */
-
+#ifdef VITA
+#include "common/button-keyboard.h"
+#include <psp2/kernel/threadmgr.h>
+#endif
 #include "funcs.h"
 
 /* Define these here to avoid using <stdlib.h> */
@@ -28,11 +31,18 @@ extern int rand P((void));
 extern time_t time P((time_t *));
 extern struct tm *localtime ();
 
+
+
 /* Terminate the game */
 
 void exit_()
 {
-    fprintf(stderr, "The game is over.\n");
+    printf("The game is over.\n");
+    #ifdef VITA
+    sceKernelDelayThread(5*1000000); // Wait for  seconds
+    cleanup();
+    psvDebugCleanup();
+    #endif
     exit(0);
 }
 
@@ -48,7 +58,7 @@ integer *secptr;
 
 	time(&timebuf);
 	tmptr = localtime(&timebuf);
-	
+
 	*hrptr  = tmptr->tm_hour;
 	*minptr = tmptr->tm_min;
 	*secptr = tmptr->tm_sec;
@@ -217,8 +227,10 @@ const char *z;
 	coutput = 0;
     }
 */
-    if (z != NULL)
-	printf("%s\n", z);
+    if (z != NULL) {
+	       printf("%s", z);
+        printf("\n");
+    }
 
     coutput++;
 }
