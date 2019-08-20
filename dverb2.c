@@ -22,10 +22,14 @@ void savegm_()
 /* 						!DISABLE GAME. */
 /* Note: save file format is different for PDP vs. non-PDP versions */
 
+    #ifdef VITA
+    if ((e = fopen("ux0:data/dsave.dat", BINWRITE)) == NULL)
+    #else
     if ((e = fopen("dsave.dat", BINWRITE)) == NULL)
+    #endif
 	goto L100;
 
-    gttime_(&i); 
+    gttime_(&i);
 /* 						!GET TIME. */
 
 #define do_uio(i, zbuf, cbytes) \
@@ -113,7 +117,11 @@ void rstrgm_()
 /* 						!DISABLE GAME. */
 /* Note: save file format is different for PDP vs. non-PDP versions */
 
+    #ifdef VITA
+    if ((e = fopen("ux0:data/dsave.dat", BINREAD)) == NULL)
+    #else
     if ((e = fopen("dsave.dat", BINREAD)) == NULL)
+    #endif
 	goto L100;
 
 #define do_uio(i, zbuf, cbytes) \
@@ -407,7 +415,7 @@ L2500:
 L5000:
     i = xpars_1.xelnt[xpars_1.xcond - 1] * rnd_(8);
 /* 						!CHOOSE RANDOM EXIT. */
-    curxt_1.xroom1 = exits_1.travel[rooms_1.rexit[play_1.here - 1] + i - 1] & 
+    curxt_1.xroom1 = exits_1.travel[rooms_1.rexit[play_1.here - 1] + i - 1] &
 	    xpars_1.xrmask;
     ret_val = curxt_1.xroom1;
 /* 						!RETURN EXIT. */
@@ -469,7 +477,7 @@ L6000:
 /* C7-	FROBOZZ FLAG (BANK ALARM) */
 
 L7000:
-    findex_1.frobzf = objcts_1.oroom[oindex_1.bills - 1] != 0 & 
+    findex_1.frobzf = objcts_1.oroom[oindex_1.bills - 1] != 0 &
 	    objcts_1.oroom[oindex_1.portr - 1] != 0;
     return ret_val;
 /* CXAPPL, PAGE 3 */
@@ -550,11 +558,11 @@ L10000:
 /* 						!ASSUME CANT. */
     ldir = (prsvec_1.prso - xsrch_1.xnorth) / xsrch_1.xnorth * 45;
 /* 						!XLATE DIR TO DEGREES. */
-    if (! findex_1.mropnf || (findex_1.mdir + 270) % 360 != ldir && 
+    if (! findex_1.mropnf || (findex_1.mdir + 270) % 360 != ldir &&
 	    prsvec_1.prso != xsrch_1.xexit) {
 	goto L10200;
     }
-    curxt_1.xroom1 = (findex_1.mloc - rindex_1.mra << 1) + rindex_1.mrae + 1 
+    curxt_1.xroom1 = (findex_1.mloc - rindex_1.mra << 1) + rindex_1.mrae + 1
 	    - findex_1.mdir / 180;
 /* 						!ASSUME E-W EXIT. */
     if (findex_1.mdir % 180 == 0) {
@@ -572,7 +580,7 @@ L10100:
     return ret_val;
 
 L10200:
-    if (! findex_1.wdopnf || (findex_1.mdir + 180) % 360 != ldir && 
+    if (! findex_1.wdopnf || (findex_1.mdir + 180) % 360 != ldir &&
 	    prsvec_1.prso != xsrch_1.xexit) {
 	return ret_val;
     }
@@ -641,7 +649,7 @@ L14000:
     return ret_val;
 
 L14100:
-    if (findex_1.cphere != 52 || prsvec_1.prso != xsrch_1.xwest || ! 
+    if (findex_1.cphere != 52 || prsvec_1.prso != xsrch_1.xwest || !
 	    findex_1.cpoutf) {
 	goto L14200;
     }
@@ -670,7 +678,7 @@ L14400:
     if (j < 0) {
 	k = -8;
     }
-    if ((abs(j) == 1 || abs(j) == 8 || (puzzle_1.cpvec[findex_1.cphere + k - 
+    if ((abs(j) == 1 || abs(j) == 8 || (puzzle_1.cpvec[findex_1.cphere + k -
 	    1] == 0 || puzzle_1.cpvec[nxt - k - 1] == 0)) && puzzle_1.cpvec[
 	    nxt - 1] == 0) {
 	goto L14500;
