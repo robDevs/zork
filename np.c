@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#ifdef VITA
+#include "button-keyboard.h"
+#endif
 #include "funcs.h"
 #include "vars.h"
 
@@ -34,8 +37,16 @@ L10:
 /* 						!PROMPT FOR GAME. */
 L90:
     (void) fflush(stdout);
-    if (fgets(buffer, 78, stdin) == NULL)
+    #ifdef VITA
+    strcpy(buffer, keyboard_get(78, 960-300, 544-(17*3+54)+57));
+    printf(buffer);
+    printf("\n");
+    if (buffer == NULL) {
+    #else
+    if (fgets(buffer, 78, stdin) == NULL){
+    #endif
 	exit_();
+    }
     more_input();
 
     if (buffer[0] == '!') {
