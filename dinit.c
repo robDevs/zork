@@ -10,10 +10,13 @@
 #include <amos.h>
 #endif
 
+
+
 #include "funcs.h"
 #include "vars.h"
 
 /* This is here to avoid depending on the existence of <stdlib.h> */
+
 
 extern void srand P((unsigned int));
 
@@ -26,7 +29,11 @@ FILE *dbfile;
 #ifdef unix
 #define TEXTFILE "/usr/games/lib/dunlib/dtextc.dat"
 #else /* ! unix */
+#ifdef VITA
+#define TEXTFILE "app0:/dtextc.dat"
+#else
  I need a definition for TEXTFILE
+#endif
 #endif /* ! unix */
 #endif /* ! __AMOS__ */
 #endif /* ! TEXTFILE */
