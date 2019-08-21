@@ -38,7 +38,7 @@ L10:
 L90:
     (void) fflush(stdout);
     #ifdef VITA
-    strcpy(buffer, keyboard_get(78, 960-300, 544-(17*3+54)+57));
+    strcpy(buffer, keyboard_get(78));
     printf(buffer);
     printf("\n");
     if (buffer == NULL) {

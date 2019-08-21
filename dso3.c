@@ -179,7 +179,7 @@ L100:
 /* 						!ASK */
     (void) fflush(stdout);
     #ifdef VITA
-        strcpy(ans, keyboard_get(78, 960-300, 544-(17*3+54)+57));
+        strcpy(ans, keyboard_get(78));
     #else
     (void) fgets(ans, sizeof ans, stdin);
     #endif

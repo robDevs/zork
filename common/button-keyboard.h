@@ -5,6 +5,7 @@
 #include <psp2/ctrl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct {
     char print_name;
@@ -13,9 +14,14 @@ typedef struct {
 } charKey;
 
 extern charKey keys[];
-extern vita2d_pgf *pgf;
+extern vita2d_pgf *keys_pgf;
+extern int cursor;
+extern int frame;
 
 extern void init_keyboard();
-extern char *keyboard_get(int max, int x, int y);
-extern void cleanup();
+extern void set_key_chars(int option); //zero for letters, 1 for special chars.
+extern char *keyboard_get(int max);
+extern void draw_keys(char *text);
+extern void keyboard_cleanup();
+extern void draw_key(charKey key, bool selected);
 #endif

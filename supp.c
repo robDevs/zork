@@ -40,7 +40,7 @@ void exit_()
     printf("The game is over.\n");
     #ifdef VITA
     sceKernelDelayThread(5*1000000); // Wait for  seconds
-    cleanup();
+    keyboard_cleanup();
     psvDebugCleanup();
     #endif
     exit(0);

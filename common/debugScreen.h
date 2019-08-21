@@ -7,6 +7,8 @@
 #include <inttypes.h>
 #include <vita2d.h>
 
+#include "button-keyboard.h"
+
 typedef struct PsvDebugScreenFont {
 	unsigned char* glyphs, width, height, first, last, size_w, size_h;
 } PsvDebugScreenFont;
@@ -101,6 +103,7 @@ int psvDebugScreenInit() {
 	return 0;/* avoid linking non-initializer (prx) with sceDisplay/sceMemory */
 #else
 	pgf = vita2d_load_default_pgf();
+	init_keyboard();
 	mutex = sceKernelCreateMutex("log_mutex", 0, 0, NULL);
 	SceUID displayblock = sceKernelAllocMemBlock("display", SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SCREEN_FB_SIZE, NULL);
 	sceKernelGetMemBlockBase(displayblock, (void**)&base);
@@ -165,11 +168,12 @@ int psvDebugScreenPuts(const char * _text) {
 }
 
 void psvDebugScreenVita2d(const char *_text) {
-	if(coordY_adv - 20 > 400) {
+	if(coordY_adv - 5 > 544-162-30) {
 		sceKernelDelayThread(3*1000000); //wait for ketchup.
 		for(int i = 0; i < 3; i++) {
 			vita2d_start_drawing();
 			vita2d_clear_screen();
+			draw_keys("");
 			vita2d_end_drawing();
 			vita2d_swap_buffers();
 		}
