@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <psp2/touch.h>
+
 typedef struct {
     char print_name;
     int x;

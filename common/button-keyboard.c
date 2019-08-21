@@ -125,16 +125,56 @@ char *keyboard_get(int max) {
 
     init_keys();
 
-    char text[100] = "";
+    char text[100] = "_";
+
+    sceTouchSetSamplingState(SCE_TOUCH_PORT_FRONT, 1);
+    sceTouchEnableTouchForce(SCE_TOUCH_PORT_FRONT);
+    SceTouchData touch_old[SCE_TOUCH_PORT_MAX_NUM];
+	SceTouchData touch[SCE_TOUCH_PORT_MAX_NUM];
+
+    int wait = 0; //getting touch on first few loops maybe?
 
     while(done == 0) {
         update_keys();
+        memcpy(touch_old, touch, sizeof(touch_old));
+
+        sceTouchPeek(0, &touch[0], 1);
 
         if(select_released) {
             frame += 1;
             if(frame > 2)
                 frame = 0;
             set_key_chars(frame);
+        }
+        if(wait < 5) wait++;
+        //check for a press
+        if(touch_old[SCE_TOUCH_PORT_FRONT].reportNum > 0 && wait >= 5) {
+            for(int i = 0; i < 26; i++) {
+                if((touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 >= keys[i].y)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 <= keys[i].y + 50)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 >= keys[i].x)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 <= keys[i].x + 91))
+                {
+                    cursor = i;
+                }
+            }
+        }
+        //check for a release
+        if(touch[SCE_TOUCH_PORT_FRONT].reportNum == 0 && touch_old[SCE_TOUCH_PORT_FRONT].reportNum > 0 && wait >= 5) {
+            for(int i = 0; i < 26; i++) {
+                if((touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 >= keys[i].y)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 <= keys[i].y + 50)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 >= keys[i].x)
+                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 <= keys[i].x + 91))
+                {
+                    cursor = i;
+                    if(text_cursor < max) {
+                        text[text_cursor] = keys[i].print_name;
+                        text_cursor += 1;
+                        text[text_cursor] = '_';
+                    }
+                }
+            }
         }
 
         if(start_released)
