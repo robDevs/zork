@@ -11,11 +11,15 @@
 
 typedef struct {
     char print_name;
+    char *string_name;
     int x;
     int y;
+    int w;
+    int h;
 } charKey;
 
 extern charKey keys[];
+extern charKey space, enter, del, next;
 extern vita2d_pgf *keys_pgf;
 extern int cursor;
 extern int frame;

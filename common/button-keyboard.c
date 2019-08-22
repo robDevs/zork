@@ -2,6 +2,7 @@
 #include "controls.h"
 
 charKey keys[26];
+charKey space, enter, del, next;
 vita2d_pgf *keys_pgf;
 int cursor;
 int frame;
@@ -11,11 +12,43 @@ void init_keyboard() {
     cursor = 0;
     frame = 0;
 
+    space.print_name = ' ';
+    space.string_name = "space";
+    enter.print_name = ' ';
+    enter.string_name = "ent";
+    del.print_name = ' ';
+    del.string_name = "del";
+    next.print_name = ' ';
+    next.string_name = "1$?";
+
+    space.x = 4;
+    space.y = 544 - 54;
+    space.w = ((6+91/2+95-8)/2)-2;
+    space.h = 50;
+
+    next.x = 4 + ((6+91/2+95-8)/2)+4;
+    next.y = 544 - 54;
+    next.w = ((6+91/2+95-8)/2)-2;
+    next.h = 50;
+
+    enter.x = 960 - (6+91/2+95-8)-10;
+    enter.y = 544 - 54;
+    enter.w = (6+91/2+95-8)/2;
+    enter.h = 50;
+
+    del.x = 960 - ((6+91/2+95-8)/2)-6;
+    del.y = 544 - 54;
+    del.w = (6+91/2+95-8)/2;
+    del.h = 50;
+
     int x = 6;
     int y = 544-162; // the positions for the keys.
     for(int i = 0; i < 26; i++) {
         keys[i].x = x;
         keys[i].y = y;
+        keys[i].w = 91;
+        keys[i].h = 50;
+        keys[i].string_name = NULL;
         x += 95;
         if(i == 9) {
             x = 6+91/2;
@@ -271,6 +304,10 @@ void draw_keys(char *text) {
     for(int i = 0; i < 26; i++) {
         draw_key(keys[i], cursor == i);
     }
+    draw_key(space, false);
+    draw_key(enter, false);
+    draw_key(del, false);
+    draw_key(next, false);
 }
 
 void keyboard_cleanup() {
@@ -279,9 +316,12 @@ void keyboard_cleanup() {
 
 void draw_key(charKey key, bool selected) {
     if(!selected)
-        vita2d_draw_rectangle(key.x, key.y, 91, 50, RGBA8(0,0,0,255));
+        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, RGBA8(0,0,0,255));
     else
-        vita2d_draw_rectangle(key.x, key.y, 91, 50, RGBA8(130,130,130,255));
+        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, RGBA8(130,130,130,255));
 
-    vita2d_pgf_draw_textf(keys_pgf, key.x+91/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+25+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, RGBA8(255,255,255,255), 1.0f, "%c", key.print_name);
+    if(key.string_name == NULL)
+      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, RGBA8(255,255,255,255), 1.0f, "%c", key.print_name);
+    else
+      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, key.string_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, key.string_name)/2, RGBA8(255,255,255,255), 1.0f, "%s", key.string_name);
 }
