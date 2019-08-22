@@ -1,5 +1,6 @@
 #include "button-keyboard.h"
 #include "controls.h"
+#include <ctype.h>
 
 charKey keys[26];
 charKey space, enter, del, next;
@@ -12,6 +13,8 @@ unsigned int kb_bg_color, kb_text_color, kb_text_bg_color, kb_text_sel_color, kb
 void kb_set_color(unsigned int *color, int r, int g, int b, int a) {
     *color = RGBA8(r,g,b,a);
 }
+
+bool kb_uppercase;
 
 void init_keyboard() {
     keys_pgf = vita2d_load_default_pgf(); //font used by keyboard.
@@ -27,12 +30,14 @@ void init_keyboard() {
     //!original colors.
 
     //having fun with colors.
-    kb_set_color(&kb_bg_color, 0,0,0, 255);
-    kb_set_color(&kb_text_color, 0,255,0, 255);
-    kb_set_color(&kb_text_bg_color, 61,61,61, 255);
-    kb_set_color(&kb_text_sel_color, 0,0,0, 255);
-    kb_set_color(&kb_output_color, 0,255,0, 255);
+    //kb_set_color(&kb_bg_color, 0,0,0, 255);
+    //kb_set_color(&kb_text_color, 0,255,0, 255);
+    //kb_set_color(&kb_text_bg_color, 61,61,61, 255);
+    //kb_set_color(&kb_text_sel_color, 0,0,0, 255);
+    //kb_set_color(&kb_output_color, 0,255,0, 255);
     //!having fun with colors. .
+
+    kb_uppercase = false;
 
     space.print_name = ' ';
     space.string_name = "space";
@@ -233,7 +238,10 @@ char *keyboard_get(int max) {
                 {
                     cursor = i;
                     if(text_cursor < max) {
-                        text[text_cursor] = keys[i].print_name;
+                        if(!kb_uppercase)
+                            text[text_cursor] = keys[cursor].print_name;
+                        else
+                            text[text_cursor] = toupper(keys[cursor].print_name);
                         text_cursor += 1;
                         text[text_cursor] = '_';
                     }
@@ -352,7 +360,10 @@ char *keyboard_get(int max) {
 
         if(cross_pressed) {
             if(text_cursor < max && cursor < 26) {
-                text[text_cursor] = keys[cursor].print_name;
+                if(!kb_uppercase)
+                    text[text_cursor] = keys[cursor].print_name;
+                else
+                    text[text_cursor] = toupper(keys[cursor].print_name);
                 text_cursor += 1;
                 text[text_cursor] = '_';
             }
@@ -400,6 +411,13 @@ char *keyboard_get(int max) {
             }
         }
 
+        if(triangle_pressed) {
+            if(kb_uppercase)
+                kb_uppercase = false;
+            else
+                kb_uppercase = true;
+        }
+
         vita2d_start_drawing();
 
         draw_keys(text);
@@ -436,8 +454,12 @@ void draw_key(charKey key, bool selected) {
     else
         vita2d_draw_rectangle(key.x, key.y, key.w, key.h, kb_text_sel_color);
 
-    if(key.string_name == NULL)
-      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, kb_text_color, 1.0f, "%c", key.print_name);
+    if(key.string_name == NULL) {
+        if(!kb_uppercase)
+            vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, kb_text_color, 1.0f, "%c", key.print_name);
+        else
+            vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, kb_text_color, 1.0f, "%c", toupper(key.print_name));
+    }
     else
       vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, key.string_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, key.string_name)/2, kb_text_color, 1.0f, "%s", key.string_name);
 }
