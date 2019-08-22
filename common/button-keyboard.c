@@ -15,9 +15,9 @@ void init_keyboard() {
     space.print_name = ' ';
     space.string_name = "space";
     enter.print_name = ' ';
-    enter.string_name = "ent";
+    enter.string_name = "enter";
     del.print_name = ' ';
-    del.string_name = "del";
+    del.string_name = "delete";
     next.print_name = ' ';
     next.string_name = "1$?";
 
@@ -91,36 +91,10 @@ void set_key_chars(int option){
         keys[23].print_name = 'b';
         keys[24].print_name = 'n';
         keys[25].print_name = 'm';
+
+        next.string_name = "123";
     }
     else if(option == 1) {
-        keys[0].print_name = '~';
-        keys[1].print_name = '`';
-        keys[2].print_name = '!';
-        keys[3].print_name = '@';
-        keys[4].print_name = '#';
-        keys[5].print_name = '$';
-        keys[6].print_name = '%';
-        keys[7].print_name = '^';
-        keys[8].print_name = '&';
-        keys[9].print_name = '*';
-        keys[10].print_name = '(';
-        keys[11].print_name = ')';
-        keys[12].print_name = '{';
-        keys[13].print_name = '}';
-        keys[14].print_name = '+';
-        keys[15].print_name = '=';
-        keys[16].print_name = '[';
-        keys[17].print_name = ']';
-        keys[18].print_name = '_';
-        keys[19].print_name = '-';
-        keys[20].print_name = ':';
-        keys[21].print_name = ';';
-        keys[22].print_name = '"';
-        keys[23].print_name = '\'';
-        keys[24].print_name = '?';
-        keys[25].print_name = '/';
-    }
-    else if(option == 2) {
         keys[0].print_name = '1';
         keys[1].print_name = '2';
         keys[2].print_name = '3';
@@ -147,6 +121,38 @@ void set_key_chars(int option){
         keys[23].print_name = '\'';
         keys[24].print_name = '?';
         keys[25].print_name = '/';
+
+        next.string_name = "@#$";
+    }
+    else if(option == 2) {
+        keys[0].print_name = '~';
+        keys[1].print_name = '`';
+        keys[2].print_name = '!';
+        keys[3].print_name = '@';
+        keys[4].print_name = '#';
+        keys[5].print_name = '$';
+        keys[6].print_name = '%';
+        keys[7].print_name = '^';
+        keys[8].print_name = '&';
+        keys[9].print_name = '*';
+        keys[10].print_name = '(';
+        keys[11].print_name = ')';
+        keys[12].print_name = '{';
+        keys[13].print_name = '}';
+        keys[14].print_name = '+';
+        keys[15].print_name = '=';
+        keys[16].print_name = '[';
+        keys[17].print_name = ']';
+        keys[18].print_name = '_';
+        keys[19].print_name = '-';
+        keys[20].print_name = ':';
+        keys[21].print_name = ';';
+        keys[22].print_name = '"';
+        keys[23].print_name = '\'';
+        keys[24].print_name = '?';
+        keys[25].print_name = '/';
+
+        next.string_name = "ABC";
     }
 }
 
@@ -173,12 +179,6 @@ char *keyboard_get(int max) {
 
         sceTouchPeek(0, &touch[0], 1);
 
-        if(select_released) {
-            frame += 1;
-            if(frame > 2)
-                frame = 0;
-            set_key_chars(frame);
-        }
         if(wait < 5) wait++;
         //check for a press
         if(touch_old[SCE_TOUCH_PORT_FRONT].reportNum > 0 && wait >= 5) {
@@ -191,14 +191,23 @@ char *keyboard_get(int max) {
                     cursor = i;
                 }
             }
+
+            if(check_collision_point_key(space, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2))
+                cursor = 26;
+
+            if(check_collision_point_key(next, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2))
+                cursor = 27;
+
+            if(check_collision_point_key(enter, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2))
+                cursor = 28;
+
+            if(check_collision_point_key(del, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2))
+                cursor = 29;
         }
         //check for a release
         if(touch[SCE_TOUCH_PORT_FRONT].reportNum == 0 && touch_old[SCE_TOUCH_PORT_FRONT].reportNum > 0 && wait >= 5) {
             for(int i = 0; i < 26; i++) {
-                if((touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 >= keys[i].y)
-                && (touch[SCE_TOUCH_PORT_FRONT].report[0].y/2 <= keys[i].y + 50)
-                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 >= keys[i].x)
-                && (touch[SCE_TOUCH_PORT_FRONT].report[0].x/2 <= keys[i].x + 91))
+                if(check_collision_point_key(keys[i], touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2))
                 {
                     cursor = i;
                     if(text_cursor < max) {
@@ -208,17 +217,63 @@ char *keyboard_get(int max) {
                     }
                 }
             }
+
+            if(check_collision_point_key(space, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2)) {
+                cursor = 26;
+                if(text_cursor < max) {
+                    text[text_cursor] = ' ';
+                    text_cursor += 1;
+                    text[text_cursor] = '_';
+                }
+            }
+
+            if(check_collision_point_key(next, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2)) {
+                frame += 1;
+                cursor = 27;
+                if(frame > 2)
+                    frame = 0;
+                set_key_chars(frame);
+            }
+
+            if(check_collision_point_key(enter, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2)) {
+                cursor = 28;
+
+                done = 1;
+            }
+
+            if(check_collision_point_key(del, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2)) {
+                cursor = 29;
+                if(text_cursor > 0) {
+                    text[text_cursor] = NULL;
+                    text_cursor -= 1;
+                    text[text_cursor] = '_';
+                }
+                else if(text_cursor == 0)
+                    text[text_cursor] = '_';
+            }
         }
 
         if(start_released)
             done = 1;
+
+        if(select_released) {
+            frame += 1;
+            if(frame > 2)
+                frame = 0;
+            set_key_chars(frame);
+        }
+
         if(left_pressed){
             if(cursor == 0)
                 cursor += 9;
             else if(cursor == 10)
                 cursor += 8;
             else if(cursor == 19)
-                cursor += 6;
+                cursor = 27;
+            else if(cursor == 26)
+                cursor = 29;
+            else if(cursor == 28)
+                cursor = 25;
             else
                 cursor -= 1;
         }
@@ -228,17 +283,23 @@ char *keyboard_get(int max) {
             else if(cursor == 18)
                 cursor -= 8;
             else if(cursor == 25)
-                cursor -= 6;
+                cursor = 28;
+            else if(cursor == 27)
+                cursor = 19;
+            else if(cursor == 29)
+                cursor = 26;
             else
                 cursor += 1;
         }
         if(up_pressed) {
             if(cursor < 8 && cursor > 0)
-                cursor += 18;
+                cursor += 18;//top wrow to bottm.
             else if(cursor == 0)
-                cursor += 19;
-            else if(cursor == 8 || cursor == 9)
-                cursor = 25;
+                cursor = 27;//special case for q || keys[0]
+            else if(cursor == 8)
+                cursor = 28;//special case for 0 || keys[8]
+            else if(cursor == 9)
+                cursor = 29;//special case for p || keys[9]
             else if(cursor < 18)
                 cursor -= 10;
             else if(cursor == 18)
@@ -252,24 +313,57 @@ char *keyboard_get(int max) {
             else if(cursor < 18 && cursor > 10)
                 cursor += 8;
             else if(cursor == 10)
-                cursor += 9;
+                cursor = 27;
             else if(cursor == 18)
-                cursor += 7;
+                cursor = 28;
+            else if(cursor == 26)
+                cursor = 0;
+            else if(cursor == 27)
+                cursor = 1;
+            else if(cursor == 28)
+                cursor = 8;
+            else if(cursor == 29)
+                cursor = 9;
             else if(cursor >= 19)
                 cursor -= 18;
         }
 
         if(cross_pressed) {
-            if(text_cursor < max) {
+            if(text_cursor < max && cursor < 26) {
                 text[text_cursor] = keys[cursor].print_name;
                 text_cursor += 1;
                 text[text_cursor] = '_';
+            }
+            if(cursor == 26) {
+                if(text_cursor < max) {
+                    text[text_cursor] = ' ';
+                    text_cursor += 1;
+                    text[text_cursor] = '_';
+                }
+            }
+            if(cursor == 27) {
+                frame += 1;
+                if(frame > 2)
+                    frame = 0;
+                set_key_chars(frame);
+            }
+            if(cursor == 28) {
+                done = 1;
+            }
+            if(cursor == 29) {
+                if(text_cursor > 0) {
+                    text[text_cursor] = NULL;
+                    text_cursor -= 1;
+                    text[text_cursor] = '_';
+                }
+                else if(text_cursor == 0)
+                    text[text_cursor] = '_';
             }
         }
 
         if(circle_pressed) {
             if(text_cursor > 0) {
-                text[text_cursor] = ' ';
+                text[text_cursor] = NULL;
                 text_cursor -= 1;
                 text[text_cursor] = '_';
             }
@@ -304,10 +398,10 @@ void draw_keys(char *text) {
     for(int i = 0; i < 26; i++) {
         draw_key(keys[i], cursor == i);
     }
-    draw_key(space, false);
-    draw_key(enter, false);
-    draw_key(del, false);
-    draw_key(next, false);
+    draw_key(space, cursor == 26);
+    draw_key(next, cursor == 27);
+    draw_key(enter, cursor == 28);
+    draw_key(del, cursor == 29);
 }
 
 void keyboard_cleanup() {
@@ -324,4 +418,14 @@ void draw_key(charKey key, bool selected) {
       vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, RGBA8(255,255,255,255), 1.0f, "%c", key.print_name);
     else
       vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, key.string_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, key.string_name)/2, RGBA8(255,255,255,255), 1.0f, "%s", key.string_name);
+}
+
+bool check_collision_point_key(charKey key, int x, int y) {
+    if ((y >= key.y)
+    && (y <= key.y + 50)
+    && (x >= key.x)
+    && (x <= key.x + 91))
+        return true;
+    else
+        return false;
 }

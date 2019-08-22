@@ -30,4 +30,5 @@ extern char *keyboard_get(int max);
 extern void draw_keys(char *text);
 extern void keyboard_cleanup();
 extern void draw_key(charKey key, bool selected);
+extern bool check_collision_point_key(charKey key, int x, int y);
 #endif
