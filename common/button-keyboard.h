@@ -24,6 +24,10 @@ extern vita2d_pgf *keys_pgf;
 extern int cursor;
 extern int frame;
 
+extern unsigned int kb_bg_color, kb_text_color, kb_text_bg_color, kb_text_sel_color, kb_output_color;
+
+extern void kb_set_color(unsigned int *color, int r, int g, int b, int a);
+
 extern void init_keyboard();
 extern void set_key_chars(int option); //zero for letters, 1 for special chars.
 extern char *keyboard_get(int max);

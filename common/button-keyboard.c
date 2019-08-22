@@ -7,10 +7,32 @@ vita2d_pgf *keys_pgf;
 int cursor;
 int frame;
 
+unsigned int kb_bg_color, kb_text_color, kb_text_bg_color, kb_text_sel_color, kb_output_color;
+
+void kb_set_color(unsigned int *color, int r, int g, int b, int a) {
+    *color = RGBA8(r,g,b,a);
+}
+
 void init_keyboard() {
     keys_pgf = vita2d_load_default_pgf(); //font used by keyboard.
     cursor = 0;
     frame = 0;
+
+    //original colors.
+    kb_set_color(&kb_bg_color, 190, 190, 190, 255);
+    kb_set_color(&kb_text_color, 255, 255, 255, 255);
+    kb_set_color(&kb_text_bg_color, 0, 0, 0, 255);
+    kb_set_color(&kb_text_sel_color, 130, 130, 130, 255);
+    kb_set_color(&kb_output_color, 0, 0, 0, 255);
+    //!original colors.
+
+    //having fun with colors.
+    kb_set_color(&kb_bg_color, 0,0,0, 255);
+    kb_set_color(&kb_text_color, 0,255,0, 255);
+    kb_set_color(&kb_text_bg_color, 61,61,61, 255);
+    kb_set_color(&kb_text_sel_color, 0,0,0, 255);
+    kb_set_color(&kb_output_color, 0,255,0, 255);
+    //!having fun with colors. .
 
     space.print_name = ' ';
     space.string_name = "space";
@@ -26,7 +48,7 @@ void init_keyboard() {
     space.w = ((6+91/2+95-8)/2)-2;
     space.h = 50;
 
-    next.x = 4 + ((6+91/2+95-8)/2)+4;
+    next.x = 4 + ((6+91/2+95-8)/2)+2;
     next.y = 544 - 54;
     next.w = ((6+91/2+95-8)/2)-2;
     next.h = 50;
@@ -391,9 +413,9 @@ char *keyboard_get(int max) {
 }
 
 void draw_keys(char *text) {
-    vita2d_draw_rectangle(0, 544-162-30, 960, 162+30, RGBA8(190,190,190,255));
+    vita2d_draw_rectangle(0, 544-162-30, 960, 162+30, kb_bg_color);
 
-    vita2d_pgf_draw_textf(keys_pgf, 960/2-vita2d_pgf_text_width(keys_pgf, 1.0f, text)/2, 544-162-10, RGBA8(0,0,0,255), 1.0f, ">%s", text);
+    vita2d_pgf_draw_textf(keys_pgf, 960/2-vita2d_pgf_text_width(keys_pgf, 1.0f, text)/2, 544-162-10, kb_output_color, 1.0f, ">%s", text);
 
     for(int i = 0; i < 26; i++) {
         draw_key(keys[i], cursor == i);
@@ -410,14 +432,14 @@ void keyboard_cleanup() {
 
 void draw_key(charKey key, bool selected) {
     if(!selected)
-        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, RGBA8(0,0,0,255));
+        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, kb_text_bg_color);
     else
-        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, RGBA8(130,130,130,255));
+        vita2d_draw_rectangle(key.x, key.y, key.w, key.h, kb_text_sel_color);
 
     if(key.string_name == NULL)
-      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, RGBA8(255,255,255,255), 1.0f, "%c", key.print_name);
+      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, &key.print_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, &key.print_name)/2, kb_text_color, 1.0f, "%c", key.print_name);
     else
-      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, key.string_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, key.string_name)/2, RGBA8(255,255,255,255), 1.0f, "%s", key.string_name);
+      vita2d_pgf_draw_textf(keys_pgf, key.x+key.w/2-vita2d_pgf_text_width(keys_pgf, 1.0f, key.string_name)/2, key.y+key.h/2+vita2d_pgf_text_height(keys_pgf, 1.0f, key.string_name)/2, kb_text_color, 1.0f, "%s", key.string_name);
 }
 
 bool check_collision_point_key(charKey key, int x, int y) {
