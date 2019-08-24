@@ -3,7 +3,7 @@
 #include <ctype.h>
 
 charKey keys[26];
-charKey space, enter, del, next;
+charKey space, enter, del, next, toUpper;
 vita2d_pgf *keys_pgf;
 int cursor;
 int frame;
@@ -47,6 +47,7 @@ void init_keyboard() {
     del.string_name = "delete";
     next.print_name = ' ';
     next.string_name = "1$?";
+    toUpper.string_name = "^";
 
     space.x = 4;
     space.y = 544 - 54;
@@ -67,6 +68,11 @@ void init_keyboard() {
     del.y = 544 - 54;
     del.w = (6+91/2+95-8)/2;
     del.h = 50;
+
+    toUpper.x = 4;
+    toUpper.y = 544 - 54*2;
+    toUpper.w = 6+91/2 - 8;
+    toUpper.h = 50;
 
     int x = 6;
     int y = 544-162; // the positions for the keys.
@@ -281,6 +287,14 @@ char *keyboard_get(int max) {
                 else if(text_cursor == 0)
                     text[text_cursor] = '_';
             }
+
+            if(check_collision_point_key(toUpper, touch[SCE_TOUCH_PORT_FRONT].report[0].x/2, touch[SCE_TOUCH_PORT_FRONT].report[0].y/2)) {
+                cursor = 30;
+                if(kb_uppercase)
+                    kb_uppercase = false;
+                else
+                    kb_uppercase = true;
+            }
         }
 
         if(start_released)
@@ -297,13 +311,15 @@ char *keyboard_get(int max) {
             if(cursor == 0)
                 cursor += 9;
             else if(cursor == 10)
-                cursor += 8;
+                cursor = 30;
             else if(cursor == 19)
                 cursor = 27;
             else if(cursor == 26)
                 cursor = 29;
             else if(cursor == 28)
                 cursor = 25;
+            else if(cursor == 30)
+                cursor = 18;
             else
                 cursor -= 1;
         }
@@ -311,13 +327,15 @@ char *keyboard_get(int max) {
             if(cursor == 9)
                 cursor -= 9;
             else if(cursor == 18)
-                cursor -= 8;
+                cursor = 30;
             else if(cursor == 25)
                 cursor = 28;
             else if(cursor == 27)
                 cursor = 19;
             else if(cursor == 29)
                 cursor = 26;
+            else if(cursor == 30)
+                cursor = 10;
             else
                 cursor += 1;
         }
@@ -334,26 +352,36 @@ char *keyboard_get(int max) {
                 cursor -= 10;
             else if(cursor == 18)
                 cursor -= 10;
+            else if(cursor == 26)
+                cursor = 30;//special case for space key
+            else if(cursor == 27)
+                cursor = 10;
+            else if(cursor == 28 || cursor == 29)
+                cursor = 18;
+            else if(cursor == 30)
+                cursor = 0;
             else if(cursor >= 19)
                 cursor -= 8;
         }
         if(down_pressed) {
-            if(cursor < 10)
+            if(cursor < 9)
                 cursor += 10;
             else if(cursor < 18 && cursor > 10)
                 cursor += 8;
+            else if(cursor == 9)
+                cursor = 18;
             else if(cursor == 10)
                 cursor = 27;
             else if(cursor == 18)
                 cursor = 28;
-            else if(cursor == 26)
+            else if(cursor == 26 || cursor == 27)
                 cursor = 0;
-            else if(cursor == 27)
-                cursor = 1;
             else if(cursor == 28)
                 cursor = 8;
             else if(cursor == 29)
                 cursor = 9;
+            else if(cursor == 30)
+                cursor = 26;
             else if(cursor >= 19)
                 cursor -= 18;
         }
@@ -392,6 +420,12 @@ char *keyboard_get(int max) {
                 else if(text_cursor == 0)
                     text[text_cursor] = '_';
             }
+            if(cursor == 30) {
+                if(kb_uppercase)
+                    kb_uppercase = false;
+                else
+                    kb_uppercase = true;
+            }
         }
 
         if(circle_pressed) {
@@ -427,6 +461,7 @@ char *keyboard_get(int max) {
     }
     if(text[text_cursor] == '_')
         text[text_cursor] = ' ';
+    reset_keys();
     return strdup(text);
 }
 
@@ -442,6 +477,7 @@ void draw_keys(char *text) {
     draw_key(next, cursor == 27);
     draw_key(enter, cursor == 28);
     draw_key(del, cursor == 29);
+    draw_key(toUpper, cursor == 30);
 }
 
 void keyboard_cleanup() {

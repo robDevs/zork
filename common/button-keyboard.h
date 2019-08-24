@@ -19,7 +19,7 @@ typedef struct {
 } charKey;
 
 extern charKey keys[];
-extern charKey space, enter, del, next;
+extern charKey space, enter, del, next, toUpper;
 extern vita2d_pgf *keys_pgf;
 extern int cursor;
 extern int frame;
